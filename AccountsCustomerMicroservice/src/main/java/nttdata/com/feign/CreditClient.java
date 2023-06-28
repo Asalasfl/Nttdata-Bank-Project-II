@@ -1,13 +1,14 @@
 package nttdata.com.feign;
 
-import nttdata.com.dto.CustomerDTO;
+import nttdata.com.model.Credit;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import reactor.core.publisher.Flux;
 
-@FeignClient(name = "micro-customer")
+@FeignClient(name = "micro-credit")
 public interface CreditClient {
 
-    @GetMapping("/api/customers/{id}")
-    CustomerDTO getCustomerById(@PathVariable("id") String id);
+    @GetMapping("/api/credits/{id}")
+   public Flux<Credit> findByCustomerId(@PathVariable("id") String id);
 }

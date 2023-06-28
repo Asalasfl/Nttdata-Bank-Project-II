@@ -5,6 +5,8 @@ import nttdata.com.dto.AccountDTO;
 import nttdata.com.dto.CreditCardDTO;
 import nttdata.com.dto.CreditDTO;
 import nttdata.com.dto.CustomerDTO;
+import nttdata.com.feign.CreditCardClient;
+import nttdata.com.feign.CreditClient;
 import nttdata.com.model.Account;
 import nttdata.com.model.Credit;
 import nttdata.com.model.CreditCard;
@@ -13,6 +15,7 @@ import nttdata.com.repository.AccountRepository;
 import nttdata.com.repository.CustomerRepository;
 import nttdata.com.service.CustomerService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -24,8 +27,10 @@ import java.util.stream.Collectors;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final AccountRepository accountRepository;
-    private final CreditRepository creditRepository;
-    private final CreditCardRepository creditCardRepository;
+    @Autowired
+    private CreditClient creditClient;
+    @Autowired
+    private CreditCardClient creditCardClient;
 
 
     public Mono<CustomerDTO> createCustomer(CustomerDTO customerDTO) {
@@ -64,10 +69,10 @@ public class CustomerServiceImpl implements CustomerService {
                     Mono<List<AccountDTO>> accounts = accountRepository.findByCustomerId(customer.getId())
                             .map(this::mapToAccountDTO)
                             .collectList();
-                    Mono<List<CreditDTO>> credits = creditRepository.findByCustomerId(customer.getId())
+                    Mono<List<CreditDTO>> credits = creditClient.findByCustomerId(customer.getId())
                             .map(this::mapToCreditDTO)
                             .collectList();
-                    Mono<List<CreditCardDTO>> creditCards = creditCardRepository.findByCustomerId(customer.getId())
+                    Mono<List<CreditCardDTO>> creditCards = creditCardClient.findByCustomerId(customer.getId())
                             .map(this::mapToCreditCardDTO)
                             .collectList();
                     return Mono.zip(accounts, credits, creditCards)

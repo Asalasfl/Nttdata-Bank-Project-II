@@ -1,0 +1,13 @@
+package nttdata.com.service;
+
+import nttdata.com.dto.AccountDTO;
+import nttdata.com.dto.CustomerDTO;
+import reactor.core.publisher.Mono;
+
+public interface CustomerService {
+    Mono<CustomerDTO> createCustomer(CustomerDTO CustomerDTO);
+
+    Mono<CustomerDTO> updateCustomer(String customerId, CustomerDTO customerDTO);
+
+    Mono<CustomerDTO> getCustomerById(String customerId);
+}

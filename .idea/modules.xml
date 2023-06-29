@@ -5,8 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/Operations/BankProject.iml" filepath="$PROJECT_DIR$/Operations/BankProject.iml" />
       <module fileurl="file://$PROJECT_DIR$/CreditMicroservice/BankProject (1).iml" filepath="$PROJECT_DIR$/CreditMicroservice/BankProject (1).iml" />
       <module fileurl="file://$PROJECT_DIR$/CreditCardMicroservice/BankProject (2).iml" filepath="$PROJECT_DIR$/CreditCardMicroservice/BankProject (2).iml" />
-      <module fileurl="file://$PROJECT_DIR$/AccountsCustomerMicroservice/BankProject (3).iml" filepath="$PROJECT_DIR$/AccountsCustomerMicroservice/BankProject (3).iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/Nttdata-Bank-Project-II.iml" filepath="$PROJECT_DIR$/.idea/Nttdata-Bank-Project-II.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AccountsCustomerMicroservice/customerAccount.iml" filepath="$PROJECT_DIR$/AccountsCustomerMicroservice/customerAccount.iml" />
     </modules>
   </component>
 </project>

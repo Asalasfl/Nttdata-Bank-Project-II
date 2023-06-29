@@ -17,10 +17,9 @@ public class CreditCardController {
     public CreditCardController(CreditCardServiceImpl creditCardServiceImpl) {
         this.creditCardServiceImpl = creditCardServiceImpl;
     }
-
     @GetMapping(value = "/{id}",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Mono<CreditCardDTO> getCreditCardById(@PathVariable String id) {
-        return creditCardServiceImpl.getCreditCardById(id);
+    public Mono<CreditCardDTO> findCreditCardById(@PathVariable String id) {
+        return creditCardServiceImpl.findByCreditCardId(id);
     }
 
     @PostMapping(value = "/{creditCardId}/transactions", produces = MediaType.TEXT_EVENT_STREAM_VALUE)

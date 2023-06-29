@@ -8,6 +8,6 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface CreditRepository extends ReactiveMongoRepository<Credit, String> {
-    Flux<Credit> findByCustomerId(String customerId);
+
     Mono<Credit> findByIdAndType(String id, String type);
 }

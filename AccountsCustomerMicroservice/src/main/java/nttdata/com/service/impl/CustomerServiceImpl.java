@@ -69,10 +69,10 @@ public class CustomerServiceImpl implements CustomerService {
                     Mono<List<AccountDTO>> accounts = accountRepository.findByCustomerId(customer.getId())
                             .map(this::mapToAccountDTO)
                             .collectList();
-                    Mono<List<CreditDTO>> credits = creditClient.findByCustomerId(customer.getId())
+                    Mono<List<CreditDTO>> credits = creditClient.findByCreditId(customer.getId())
                             .map(this::mapToCreditDTO)
                             .collectList();
-                    Mono<List<CreditCardDTO>> creditCards = creditCardClient.findByCustomerId(customer.getId())
+                    Mono<List<CreditCardDTO>> creditCards = creditCardClient.findByCreditCardId(customer.getId())
                             .map(this::mapToCreditCardDTO)
                             .collectList();
                     return Mono.zip(accounts, credits, creditCards)

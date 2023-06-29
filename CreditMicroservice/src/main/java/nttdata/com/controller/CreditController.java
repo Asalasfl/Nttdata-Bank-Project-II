@@ -17,11 +17,10 @@ public class CreditController {
         this.creditServiceImpl = creditServiceImpl;
     }
 
-    @GetMapping(value = "/{id}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Mono<CreditDTO> getCreditById(@PathVariable String id) {
-        return creditServiceImpl.getCreditById(id);
+    @GetMapping(value = "/{id}",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Mono<CreditDTO> findCreditById(@PathVariable String id) {
+        return creditServiceImpl.findByCreditId(id);
     }
-
     @PostMapping(value = "/{creditId}/payments", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Mono<CreditDTO> addPayment(@PathVariable String creditId,
                                       @RequestBody PaymentDTO paymentDTO) {

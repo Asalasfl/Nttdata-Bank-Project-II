@@ -22,10 +22,11 @@ public class CreditServiceImpl implements CreditService {
     }
 
     @Override
-    public Mono<CreditDTO> getCreditById(String id) {
-        return creditRepository.findById(id)
+    public Mono<CreditDTO> findByCreditId(String customerId) {
+       return  creditRepository.findById(customerId)
                 .map(this::mapToCreditDTO);
     }
+
 
     @Override
     public Mono<CreditDTO> addPayment(String creditId, PaymentDTO paymentDTO) {

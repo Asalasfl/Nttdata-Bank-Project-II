@@ -22,11 +22,10 @@ public class CreditCardServiceImpl implements CreditCardService {
     }
 
     @Override
-    public Mono<CreditCardDTO> getCreditCardById(String id) {
-        return creditCardRepository.findById(id)
+    public Mono<CreditCardDTO> findByCreditCardId(String customerId) {
+        return  creditCardRepository.findById(customerId)
                 .map(this::mapToCreditCardDTO);
     }
-
     @Override
     public Mono<CreditCardDTO> addTransaction(String creditCardId, TransactionDTO transactionDTO) {
         return creditCardRepository.findById(creditCardId)

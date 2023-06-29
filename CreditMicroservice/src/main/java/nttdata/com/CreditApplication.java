@@ -11,14 +11,15 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EnableSwagger2
 @SpringBootApplication
-public class Application {
+public class CreditApplication {
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(CreditApplication.class, args);
     }
 
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("groupCredits")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("nttdata.com"))
                 .paths(PathSelectors.any())

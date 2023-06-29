@@ -6,7 +6,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface CreditService {
-    Mono<CreditDTO> getCreditById(String id);
+
+    Mono<CreditDTO> findByCreditId(String customerId);
 
     Mono<CreditDTO> addPayment(String creditId, PaymentDTO paymentDTO);
 

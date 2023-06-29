@@ -10,5 +10,5 @@ import reactor.core.publisher.Flux;
 public interface CreditClient {
 
     @GetMapping("/api/credits/{id}")
-   public Flux<Credit> findByCustomerId(@PathVariable("id") String id);
+   public Flux<Credit> findByCreditId(@PathVariable("id") String id);
 }

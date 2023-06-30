@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -15,10 +16,13 @@ import java.util.List;
 @Document(collection = "customers")
 public class Customer {
     @Id
-    private String id;
+    private String customerId;
     private String name;
     private String type; // "PERSONAL" or "BUSINESS"
-    private List<String> accountIds;
-    private List<String> creditIds;
-    private List<String> creditCardIds;
+    @DBRef
+    private List<Account> accountIds;
+    @DBRef
+    private List<Credit> creditIds;
+    @DBRef
+    private List<CreditCard> creditCardIds;
 }

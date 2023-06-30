@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,10 +21,13 @@ import java.util.List;
  */
 public class CreditCard {
     @Id
-    private String id;
-    private String customerId;
+    private String creditCardId;
+    @DBRef
+    @Field("customerId")
+    private Customer customerId;
     private String type;
     private BigDecimal creditLimit;
     private BigDecimal currentBalance;
-    private List<String> transactions; // List of transaction IDs
+    @DBRef
+    private List<Transaction> transactions; // List of transaction IDs
 }

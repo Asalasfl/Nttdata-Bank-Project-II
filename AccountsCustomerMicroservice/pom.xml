@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>nttdata.com</groupId>
-    <artifactId>BankProject</artifactId>
+    <artifactId>BankProject-micro-customerAccount</artifactId>
     <version>1.0-SNAPSHOT</version>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -28,8 +28,12 @@
     </properties>
 
     <dependencies>
-        <!-- Otras dependencias -->
 
+        <!-- Otras dependencias -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
         <!-- Spring WebFlux para la programación reactiva -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -82,7 +86,11 @@
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>
             <version>3.1.5</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <version>3.1.5</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

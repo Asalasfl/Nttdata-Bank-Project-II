@@ -10,10 +10,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CustomerDTO {
-    private String id;
+    private String idCustomer;
     private String name;
     private String type;
-    private List<AccountDTO> accounts;
-    private List<CreditDTO> credits;
-    private List<CreditCardDTO> creditCards;
+    private List<String> accounts;
+    private List<String> credits;
+    private List<String> creditCards;
 }

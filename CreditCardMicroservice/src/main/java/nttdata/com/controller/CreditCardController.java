@@ -1,6 +1,7 @@
 package nttdata.com.controller;
 
 
+import lombok.AllArgsConstructor;
 import nttdata.com.dto.CreditCardDTO;
 import nttdata.com.dto.TransactionDTO;
 import nttdata.com.service.impl.CreditCardServiceImpl;
@@ -8,15 +9,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/credit-cards")
 public class CreditCardController {
     private final CreditCardServiceImpl creditCardServiceImpl;
 
-    public CreditCardController(CreditCardServiceImpl creditCardServiceImpl) {
-        this.creditCardServiceImpl = creditCardServiceImpl;
-    }
     @GetMapping(value = "/{id}",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Mono<CreditCardDTO> findCreditCardById(@PathVariable String id) {
         return creditCardServiceImpl.findByCreditCardId(id);

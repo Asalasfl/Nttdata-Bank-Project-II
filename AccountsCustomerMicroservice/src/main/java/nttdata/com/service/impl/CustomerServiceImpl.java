@@ -5,8 +5,8 @@ import nttdata.com.dto.AccountDTO;
 import nttdata.com.dto.CreditCardDTO;
 import nttdata.com.dto.CreditDTO;
 import nttdata.com.dto.CustomerDTO;
-import nttdata.com.feign.CreditCardClient;
-import nttdata.com.feign.CreditClient;
+import nttdata.com.client.feign.CreditCardClient;
+import nttdata.com.client.feign.CreditClient;
 import nttdata.com.model.Account;
 import nttdata.com.model.Credit;
 import nttdata.com.model.CreditCard;
@@ -44,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findById(id)
                 .flatMap(customer -> {
                     customer.setType(customerDTO.getType());
-                    List<String> accountIds = customerDTO.getAccounts().stream()
+                    List<Account> accountIds = customerDTO.getAccounts().stream()
                             .map(AccountDTO::getId)
                             .collect(Collectors.toList());
                     customer.setAccountIds(accountIds);

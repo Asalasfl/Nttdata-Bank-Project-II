@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Document(collection = "payments")
 public class Payment {
     @Id
-    private String id;
+    private String paymentId;
     private String creditId;
     private BigDecimal amount;
     private LocalDateTime timestamp;

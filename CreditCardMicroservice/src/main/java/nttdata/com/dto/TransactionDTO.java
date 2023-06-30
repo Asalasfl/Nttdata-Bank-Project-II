@@ -1,5 +1,6 @@
 package nttdata.com.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,12 +11,18 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 /** type = deposit, withdrawal
  *
  */
 public class TransactionDTO {
-    private String id;
+    private String transactionId;
     private String type;
     private BigDecimal amount;
     private LocalDateTime timestamp;
+    private String messageDto;
+
+    public TransactionDTO(String messageDto){
+        this.setMessageDto(messageDto);
+    }
 }

@@ -1,0 +1,35 @@
+package nttdata.com.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import reactor.core.publisher.Flux;
+
+import java.math.BigDecimal;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Document(collection = "accounts")
+
+/** bank account is a generic class, for common base for all saving account,
+ *  fixedAccount with common methods and properties  for all accounts,
+ *  this is abstract class for inheritors to use their own implementation
+ *  -"SAVINGS", "CHECKING", "FIXED_TERM" for String Type
+ *  - List of transaction IDs
+ */
+public class Account {
+    @Id
+    private String accountId;
+    @DBRef
+    @Field("id")
+    private Customer customerId;
+    private String type;
+    private BigDecimal balance;
+    @DBRef
+    private Flux<Transaction> transactions;
+}

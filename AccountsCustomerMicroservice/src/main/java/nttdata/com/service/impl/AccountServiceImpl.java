@@ -1,20 +1,20 @@
 package nttdata.com.service.impl;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import nttdata.com.dto.AccountDTO;
 import nttdata.com.dto.TransactionDTO;
 import nttdata.com.model.Account;
 import nttdata.com.model.Transaction;
 import nttdata.com.repository.AccountRepository;
-import nttdata.com.repository.CustomerRepository;
 import nttdata.com.repository.TransactionRepository;
 import nttdata.com.service.AccountService;
-import nttdata.com.service.CustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import nttdata.com.utils.AccountConverter;
+import nttdata.com.utils.TransactionConverter;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import static nttdata.com.utils.AccountConverter.accountToAccountDTO;
 
 @AllArgsConstructor
 @Service
@@ -22,23 +22,16 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
 
-
-
-
     @Override
     public Mono<AccountDTO> createAccount(AccountDTO accountDTO) {
-        Account account = new Account();
-            account.setId(accountDTO.getId());
-            account.setType(accountDTO.getType());
-            account.setBalance(accountDTO.getBalance());
-            account.setTransactions(accountDTO.getTransactions());
-             return accountRepository.save(account)
-                .map(this::mapToAccountDTO);
+        Account account = AccountConverter.accountDTOToAccount(accountDTO);
+        return accountRepository.save(account)
+                .map(AccountConverter::accountToAccountDTO);
     }
     @Override
     public Mono<AccountDTO> getAccountById(String id) {
         return accountRepository.findById(id)
-                .map(this::mapToAccountDTO);
+                .map(AccountConverter::accountToAccountDTO);
     }
 
     @Override
@@ -47,10 +40,13 @@ public class AccountServiceImpl implements AccountService {
                 .flatMap(account -> {
                     account.setType(accountDTO.getType());
                     account.setBalance(accountDTO.getBalance());
-                    account.setTransactions(accountDTO.getTransactions());
+                    // Convertir Flux<TransactionDTO> a Flux<Transaction>
+                    Flux<Transaction> transactions = accountDTO.getTransactions()
+                            .flatMap(transactionDTO -> Mono.just(TransactionConverter.transactionDTOToTransaction(transactionDTO)));
+                    account.setTransactions(transactions);
 
                     return accountRepository.save(account)
-                            .map(this::mapToAccountDTO);
+                            .map(AccountConverter::accountToAccountDTO);
                 })
                 .switchIfEmpty(Mono.error(new RuntimeException("Account not found")));
     }
@@ -59,28 +55,20 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findById(accountId)
                 .flatMap(account -> {
                     account.setBalance(account.getBalance().add(transactionDTO.getAmount()));
-                    account.getTransactions().add(transactionDTO.getId());
+                    // Convertir Flux<String> a Flux<Transaction>
+                    Flux<Transaction> transactions = account.getTransactions()
+                            .flatMap(transactionId -> Mono.just(TransactionConverter.transactionDTOToTransaction(transactionDTO)));
+                    account.setTransactions(transactions);
+
                     return accountRepository.save(account)
-                            .thenReturn(mapToAccountDTO(account));
+                            .thenReturn(accountToAccountDTO(account));
                 });
     }
 
     @Override
     public Flux<TransactionDTO> getTransactionsByAccountId(String accountId) {
         return transactionRepository.findByAccountId(accountId)
-                .map(this::mapToTransactionDTO);
+                .map(TransactionConverter::transactionToTransactionDTO);
     }
 
-    private AccountDTO mapToAccountDTO(Account account) {
-        AccountDTO accountDTO = new AccountDTO();
-        accountDTO.setId(account.getId());
-        accountDTO.setType(account.getType());
-        accountDTO.setBalance(account.getBalance());
-        accountDTO.setTransactions(account.getTransactions());
-        return accountDTO;
-    }
-    private TransactionDTO mapToTransactionDTO(Transaction transaction) {
-        return new TransactionDTO(transaction.getId(), transaction.getType(),
-                transaction.getAmount(), transaction.getTimestamp());
-    }
 }

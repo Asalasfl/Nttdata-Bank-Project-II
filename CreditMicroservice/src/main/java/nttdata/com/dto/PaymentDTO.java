@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PaymentDTO {
-    private String paymentId;
+    private String idPayment;
+    private String idCredit;
     private BigDecimal amount;
     private LocalDateTime timestamp;
     private String messageDto;

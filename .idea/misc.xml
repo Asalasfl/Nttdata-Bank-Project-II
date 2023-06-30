@@ -3,7 +3,6 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/Operations/pom.xml" />
         <option value="$PROJECT_DIR$/CreditMicroservice/pom.xml" />
         <option value="$PROJECT_DIR$/CreditCardMicroservice/pom.xml" />
         <option value="$PROJECT_DIR$/AccountsCustomerMicroservice/pom.xml" />

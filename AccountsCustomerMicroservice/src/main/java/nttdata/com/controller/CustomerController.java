@@ -18,7 +18,7 @@ public class CustomerController {
 
     @PostMapping("/{customerId}/accounts")
     public Mono<Void> addAccountToCustomer(@PathVariable String customerId, @RequestBody AccountDTO accountDTO) {
-        return customerServiceMediator.addAccountToCustomer(customerId, accountDTO);
+        return customerServiceMediator.addAccountToCustomer(customerId, accountDTO).then();
     }
     @PostMapping(value = "/createCustomer", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Mono<CustomerDTO> createCustomer(@RequestBody CustomerDTO customerDTO) {

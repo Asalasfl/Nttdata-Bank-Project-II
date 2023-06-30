@@ -18,7 +18,7 @@ public class CreditCardApplication {
     }
 
     @Bean
-    public Docket api() {
+    public Docket api3() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("groupCreditCard")
                 .select()

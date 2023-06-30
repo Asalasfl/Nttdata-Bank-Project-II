@@ -7,7 +7,7 @@ public class TransactionConverter {
 
     public static TransactionDTO transactionToTransactionDTO(Transaction entity) {
         TransactionDTO dto = new TransactionDTO();
-        dto.setTransactionId(entity.getTransactionId());
+        dto.setTransactionId(entity.getId());
         dto.setType(entity.getType());
         dto.setAmount(entity.getAmount());
         dto.setTimestamp(entity.getTimestamp());
@@ -16,7 +16,7 @@ public class TransactionConverter {
     }
     public static Transaction transactionDTOToTransaction(TransactionDTO dto) {
         Transaction entity = new Transaction();
-        entity.setTransactionId(dto.getTransactionId());
+        entity.setId(dto.getTransactionId());
         entity.setType(dto.getType());
         entity.setAmount(dto.getAmount());
         entity.setTimestamp(dto.getTimestamp());

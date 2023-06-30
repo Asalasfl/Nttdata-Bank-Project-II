@@ -18,16 +18,15 @@ import reactor.core.publisher.Mono;
 @AllArgsConstructor
 @Service
 public class CreditCardServiceImpl implements CreditCardService {
-    @Autowired
+    
     private final CreditCardRepository creditCardRepository;
     private final TransactionRepository transactionRepository;
 
     @Override
-    public Mono<CreditCardDTO> findByCreditCardId(String customerId) {
-        return creditCardRepository.findById(customerId)
+    public Mono<CreditCardDTO> findByCreditCardId(String creditCardId) {
+        return creditCardRepository.findById(creditCardId)
                 .map(CreditCardConverter::creditCardToDTO)
-                .map(Mono::just)
-                .blockOptional().orElseGet(() -> Mono.just(new CreditCardDTO("La tarjeta de crédito no existe.")));
+                .switchIfEmpty(Mono.just(new CreditCardDTO("La tarjeta de crédito no existe.")));
     }
     @Override
     public Mono<CreditCardDTO> addTransaction(String creditCardId, TransactionDTO transactionDTO) {

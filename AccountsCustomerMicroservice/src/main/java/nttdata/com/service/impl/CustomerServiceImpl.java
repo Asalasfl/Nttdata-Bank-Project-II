@@ -14,9 +14,14 @@ import nttdata.com.model.Customer;
 import nttdata.com.repository.AccountRepository;
 import nttdata.com.repository.CustomerRepository;
 import nttdata.com.service.CustomerService;
+import nttdata.com.utils.AccountConverter;
+import nttdata.com.utils.CreditCardConverter;
+import nttdata.com.utils.CreditConverter;
+import nttdata.com.utils.CustomerConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
@@ -32,11 +37,11 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private CreditCardClient creditCardClient;
 
-
+    @Override
     public Mono<CustomerDTO> createCustomer(CustomerDTO customerDTO) {
-        Customer customer = mapToCustomer(customerDTO);
+        Customer customer = CustomerConverter.customerDTOToCustomer(customerDTO);
         return customerRepository.save(customer)
-                .map(this::mapToCustomerDTO);
+                .map(CustomerConverter::customerToCustomerDTO);
     }
 
     @Override
@@ -44,64 +49,57 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findById(id)
                 .flatMap(customer -> {
                     customer.setType(customerDTO.getType());
-                    List<Account> accountIds = customerDTO.getAccounts().stream()
-                            .map(AccountDTO::getId)
-                            .collect(Collectors.toList());
+
+                    Flux<Account> accountIds = customerDTO.getAccounts()
+                            .flatMap(accountId -> accountRepository.findById(accountId.get()))
+                            .collectList()
+                            .flatMapMany(Flux::fromIterable);
                     customer.setAccountIds(accountIds);
-                    List<String> creditsIds = customerDTO.getCredits().stream()
-                            .map(CreditDTO::getId)
-                            .collect(Collectors.toList());
-                    customer.setAccountIds(creditsIds);
-                    List<String> creditsCardIds = customerDTO.getCreditCards().stream()
-                            .map(CreditCardDTO::getId)
-                            .collect(Collectors.toList());
-                    customer.setAccountIds(creditsCardIds);
+
+                    Flux<Credit> creditIds = customerDTO.getCredits()
+                            .flatMap(creditId -> creditClient.findByCreditId(creditId.getIdCredit()))
+                            .collectList()
+                            .flatMapMany(Flux::fromIterable);
+                    customer.setCreditIds(creditIds);
+
+                    Flux<CreditCard> creditCardIds = customerDTO.getCreditCards()
+                            .flatMap(creditCardId -> creditCardClient.findByCreditCardId(creditCardId.getIdCreditCard()))
+                            .collectList()
+                            .flatMapMany(Flux::fromIterable);
+                    customer.setCreditCardIds(creditCardIds);
 
                     return customerRepository.save(customer)
-                            .map(this::mapToCustomerDTO);
+                            .map(CustomerConverter::customerToCustomerDTO);
                 })
-                .switchIfEmpty(Mono.error(new RuntimeException("Account not found")));
+                .switchIfEmpty(Mono.error(new RuntimeException("Customer not found")));
     }
+
     @Override
     public Mono<CustomerDTO> getCustomerById(String id) {
         return customerRepository.findById(id)
                 .flatMap(customer -> {
-                    Mono<List<AccountDTO>> accounts = accountRepository.findByCustomerId(customer.getId())
-                            .map(this::mapToAccountDTO)
-                            .collectList();
-                    Mono<List<CreditDTO>> credits = creditClient.findByCreditId(customer.getId())
-                            .map(this::mapToCreditDTO)
-                            .collectList();
-                    Mono<List<CreditCardDTO>> creditCards = creditCardClient.findByCreditCardId(customer.getId())
-                            .map(this::mapToCreditCardDTO)
-                            .collectList();
-                    return Mono.zip(accounts, credits, creditCards)
-                            .map(tuple -> new CustomerDTO(customer.getId(), customer.getName(), customer.getType(),
-                                    tuple.getT1(), tuple.getT2(), tuple.getT3()));
+                    Flux<AccountDTO> accounts = customer.getAccountIds()
+                            .flatMap(account -> accountRepository.findById(account.getAccountId())
+                                    .map(AccountConverter::accountToAccountDTO));
+                    Flux<CreditDTO> credits = customer.getCreditIds()
+                            .flatMap(credit -> creditClient.findByCreditId(credit.getCreditId())
+                                    .map(CreditConverter::creditToDTO));
+                    Flux<CreditCardDTO> creditCards = customer.getCreditCardIds()
+                            .flatMap(creditCard -> creditCardClient.findByCreditCardId(creditCard.getCreditCardId())
+                                    .map(CreditCardConverter::creditCardToDTO));
+
+                    return Mono.zip(accounts.collectList(), credits.collectList(), creditCards.collectList())
+                            .map(tuple -> new CustomerDTO(
+                                    customer.getId(),
+                                    customer.getName(),
+                                    customer.getType(),
+                                    Flux.fromIterable(tuple.getT1()),
+                                    Flux.fromIterable(tuple.getT2()),
+                                    Flux.fromIterable(tuple.getT3()),
+                                    null
+                            ));
                 });
     }
 
-    private Customer mapToCustomer(CustomerDTO customerDTO) {
-        return new Customer(customerDTO.getId(), customerDTO.getName(), customerDTO.getType(),
-                Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-    }
 
-    private CustomerDTO mapToCustomerDTO(Customer customer) {
-        ModelMapper modelMapper = new ModelMapper();
-        CustomerDTO customerDTO = modelMapper.map(customer, CustomerDTO.class);
-        return customerDTO;
-    }
-    private AccountDTO mapToAccountDTO(Account account) {
-        return new AccountDTO(account.getId(), account.getType(), account.getBalance(), account.getTransactions());
-    }
-
-    private CreditDTO mapToCreditDTO(Credit credit) {
-        return new CreditDTO(credit.getId(), credit.getAmount(), credit.getInterestRate(),
-                credit.getRemainingAmount(), credit.getPayments());
-    }
-
-    private CreditCardDTO mapToCreditCardDTO(CreditCard creditCard) {
-        return new CreditCardDTO(creditCard.getId(), creditCard.getCreditLimit(),
-                creditCard.getCurrentBalance(), creditCard.getTransactions());
-    }
 }

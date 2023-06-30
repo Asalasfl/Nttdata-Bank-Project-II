@@ -1,10 +1,8 @@
 package nttdata.com.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import nttdata.com.dto.AccountDTO;
 import nttdata.com.dto.TransactionDTO;
-import nttdata.com.service.AccountService;
 import nttdata.com.service.impl.AccountServiceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

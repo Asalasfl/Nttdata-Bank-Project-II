@@ -13,7 +13,7 @@ public class    CreditCardConverter {
 
     public static CreditCardDTO creditCardToDTO(CreditCard entity) {
         CreditCardDTO dto = new CreditCardDTO();
-        dto.setCreditCardId(entity.getCreditCardId());
+        dto.setCreditCardId(entity.getId());
         dto.setCreditLimit(entity.getCreditLimit());
         dto.setCurrentBalance(entity.getCurrentBalance());
         // Convertir Flux<Transaction> a Flux<TransactionDTO>
@@ -26,7 +26,7 @@ public class    CreditCardConverter {
 
     public static CreditCard DTOToCreditCard(CreditCardDTO dto) {
         CreditCard entity = new CreditCard();
-        entity.setCreditCardId(dto.getCreditCardId());
+        entity.setId(dto.getCreditCardId());
         entity.setCreditLimit(dto.getCreditLimit());
         entity.setCurrentBalance(dto.getCurrentBalance());
 

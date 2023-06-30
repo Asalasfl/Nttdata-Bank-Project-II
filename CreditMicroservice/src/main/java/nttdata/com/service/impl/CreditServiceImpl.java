@@ -1,30 +1,33 @@
 package nttdata.com.service.impl;
 
+import lombok.AllArgsConstructor;
 import nttdata.com.dto.CreditDTO;
 import nttdata.com.dto.PaymentDTO;
 import nttdata.com.model.Credit;
 import nttdata.com.model.Payment;
+import nttdata.com.model.Transaction;
 import nttdata.com.repository.CreditRepository;
 import nttdata.com.repository.PaymentRepository;
 import nttdata.com.service.CreditService;
+import nttdata.com.utils.CreditConverter;
+import nttdata.com.utils.PaymentConverter;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@AllArgsConstructor
 @Service
 public class CreditServiceImpl implements CreditService {
     private final CreditRepository creditRepository;
     private final PaymentRepository paymentRepository;
 
-    public CreditServiceImpl(CreditRepository creditRepository, PaymentRepository paymentRepository) {
-        this.creditRepository = creditRepository;
-        this.paymentRepository = paymentRepository;
-    }
 
     @Override
     public Mono<CreditDTO> findByCreditId(String customerId) {
-       return  creditRepository.findById(customerId)
-                .map(this::mapToCreditDTO);
+        return creditRepository.findById(customerId)
+                .map(CreditConverter::creditToDTO)
+                .map(Mono::just)
+                .blockOptional().orElseGet(() -> Mono.just(new CreditDTO("El crédito no existe.")));
     }
 
 
@@ -33,24 +36,24 @@ public class CreditServiceImpl implements CreditService {
         return creditRepository.findById(creditId)
                 .flatMap(credit -> {
                     credit.setRemainingAmount(credit.getRemainingAmount().subtract(paymentDTO.getAmount()));
-                    credit.getPayments().add(paymentDTO.getId());
-                    return creditRepository.save(credit)
-                            .thenReturn(mapToCreditDTO(credit));
+                    Payment payment = PaymentConverter.paymentDTOToPayment(paymentDTO);
+
+                    // Convertir Flux<Transaction> a List<Transaction> usando collectList()
+                    return credit.getPayments()
+                            .collectList()
+                            .flatMap(payments -> {
+                                payments.add(payment); // Agregar el pago a la lista
+                                credit.setPayments(Flux.fromIterable(payments)); // Actualizar el Flux<Transaction>
+                                return creditRepository.save(credit)
+                                        .thenReturn(CreditConverter.creditToDTO(credit));
+                            });
                 });
     }
 
     @Override
     public Flux<PaymentDTO> getPaymentsByCreditId(String creditId) {
         return paymentRepository.findByCreditId(creditId)
-                .map(this::mapToPaymentDTO);
+                .map(PaymentConverter::paymentToPaymentDTO);
     }
 
-    private CreditDTO mapToCreditDTO(Credit credit) {
-        return new CreditDTO(credit.getId(), credit.getAmount(), credit.getInterestRate(),
-                credit.getRemainingAmount(), credit.getPayments());
-    }
-
-    private PaymentDTO mapToPaymentDTO(Payment payment) {
-        return new PaymentDTO(payment.getId(), payment.getAmount(), payment.getTimestamp());
-    }
 }

@@ -19,4 +19,9 @@ public class CreditDTO {
     private BigDecimal interestRate;
     private BigDecimal remainingAmount;
     private Flux<PaymentDTO> payments;
+    private String messageDto;
+
+    public CreditDTO(String messageDto){
+        this.setMessageDto(messageDto);
+    }
 }

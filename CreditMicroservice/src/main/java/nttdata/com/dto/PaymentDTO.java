@@ -16,4 +16,9 @@ public class PaymentDTO {
     private String paymentId;
     private BigDecimal amount;
     private LocalDateTime timestamp;
+    private String messageDto;
+
+    public PaymentDTO(String messageDto){
+        this.setMessageDto(messageDto);
+    }
 }

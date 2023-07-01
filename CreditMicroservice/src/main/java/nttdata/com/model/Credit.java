@@ -31,7 +31,7 @@ public  class Credit {
     private BigDecimal amount;
     private BigDecimal interestRate;
     private BigDecimal remainingAmount;
-    @Field("payments")
+    @Field("paymentReferences")
     @DBRef
-    private List<Payment> payments; // List of payment IDs
+    private List<Payment> paymentReferences; // List of payment IDs
 }

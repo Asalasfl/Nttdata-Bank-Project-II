@@ -34,11 +34,23 @@ public class CreditServiceImpl implements CreditService {
                 payments.add(payment);
             }
         }
-        credit.setPayments(payments);
+        credit.setPaymentReferences(payments);
 
-        return creditRepository.save(credit)
+        Mono<Credit> saveCreditMono = creditRepository.save(credit);
+
+        Flux<Payment> savePaymentsFlux = Flux.fromIterable(payments)
+                .flatMap(paymentRepository::save);
+
+        return saveCreditMono
+                .thenMany(savePaymentsFlux)
+                .collectList()
+                .map(savedPayments -> {
+                    credit.setPaymentReferences(savedPayments);
+                    return credit;
+                })
                 .map(CreditConverter::creditToDTO);
     }
+
 
 
     @Override
@@ -55,9 +67,9 @@ public class CreditServiceImpl implements CreditService {
                     credit.setRemainingAmount(credit.getRemainingAmount().subtract(paymentDTO.getAmount()));
                     Payment payment = PaymentConverter.paymentDTOToPayment(paymentDTO, CreditConverter.creditToDTO(credit));
 
-                    List<Payment> paymentReferences = credit.getPayments();
+                    List<Payment> paymentReferences = credit.getPaymentReferences();
                     paymentReferences.add(payment);
-                    credit.setPayments(paymentReferences);
+                    credit.setPaymentReferences(paymentReferences);
 
                     return creditRepository.save(credit)
                             .map(CreditConverter::creditToDTO);

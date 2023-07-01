@@ -20,8 +20,8 @@ public class CreditConverter {
         dto.setRemainingAmount(entity.getRemainingAmount());
 
         List<PaymentDTO> paymentDTOs = new ArrayList<>();
-        if (entity.getPayments() != null) {
-            for (Payment payment : entity.getPayments()) {
+        if (entity.getPaymentReferences() != null) {
+            for (Payment payment : entity.getPaymentReferences()) {
                 PaymentDTO paymentDTO = paymentToPaymentDTO(payment);
                 paymentDTOs.add(paymentDTO);
             }
